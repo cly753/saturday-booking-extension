@@ -1,21 +1,25 @@
 
 console.log("facilities.view.js");
 
-var jo = function() {
+$(document).ready(function() {
 
-    $.each($.grep($("input[name='timeslots[]']"), function(o, i) {
-        console.log("grep: " + i, o.value);
+    window.addEventListener("message", function(event) {
+        if (event.origin !== window.location.origin)
+            return ;
 
-        if (o.value.indexOf("15:00:00;16:00:00") != -1)
-            return true;
-        return false;
-    }, false), function(i, o) {
-        console.log("each: " + i, o.value);
+        var all = event.data;
+        //console.log("facilities.view.js receive", event); debugger;
 
-        o.checked = true;
-    });
+        $.each($.grep($("input[name='timeslots[]']"), function(o, i) {
+            console.log("grep: " + i, o.value);
 
-    //$("#paynow").click();
-};
+            return all.plan[0].match(o.value);
+        }, false), function(i, o) {
+            console.log("each: " + i, o.value);
 
-$(document).ready(jo);
+            o.checked = true;
+        });
+
+        //$("#paynow").click();
+    }, false);
+});
