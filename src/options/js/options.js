@@ -26,8 +26,6 @@ var restoreOptions = function() {
 };
 
 $(document).ready(function() {
-    alert("hello");
-
     restoreOptions();
     $("#saveButton").click(saveOptions);
 });
