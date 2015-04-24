@@ -1,7 +1,8 @@
 
 console.log("facilities.js");
 
-var jo = function() {
+// refresh list
+$(document).ready(function() {
 
     // window.location.replace("https://" + window.location.host + "/facilities/view/activity/293/venue/422");
 
@@ -11,6 +12,5 @@ var jo = function() {
     //
     //$("select[name=venue_filter]").val(249);
     //$("select[name=venue_filter]").trigger("change");
-};
 
-$(document).ready(jo);
+});

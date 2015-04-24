@@ -3,6 +3,7 @@ var all = {
     option: {
         username: '',
         password: '',
+        host: '',
         plan: [
 
         ]
@@ -17,17 +18,24 @@ var all = {
     }
 };
 
-var initMessage = function() {
-    chrome.extension.onMessage.addListener(
-        function(request, sender, sendResponse) {
-            console.log("request", request);
-            console.log("sender", sender);
-            console.log("sendResponse", sendResponse);
+var sent = false;
 
-            console.log("background all", all);
-            sendResponse(all);
-        }
-    );
+var sendMessage = function() {
+    //if (sent)
+    //    return ;
+    sent = true;
+
+    console.log("sendMessage");
+
+    chrome.tabs.query({
+        url: 'https://' + all.option.host + '/*'
+    }, function(tabs) {
+        //console.log("Query tabs", tabs);
+        //console.log('all', all);
+        chrome.tabs.sendMessage(tabs[0].id, all, function(response) {
+            console.log("Message received.");
+        });
+    });
 };
 
 var initOptions = function() {
@@ -41,20 +49,24 @@ var initOptions = function() {
     chrome.storage.sync.get({
         username: '',
         password: '',
+        host: '',
         plan: []
     }, function(store) {
+        console.log("chrome.storage.sync.get", store);
+
         all.option.username = store.username;
         all.option.password = store.password;
+        all.option.host = store.host;
         //all.option.plan = store.plan;
         all.option.plan = [
             new Plan({
                 priority: 0,
                 activity: "Volleyball",
-                venue: "MOE (Evans) Sports Hall",
-                date: moment("2015-04-30"),
+                venue: "MOE (Evans) Outdoor Facilities",
+                date: moment("2015-04-26"),
                 hour: [
-                    17,
-                    18
+                    16,
+                    17
                 ]
                 //self.priority = p.priority;
                 //self.activity = p.activity;
@@ -63,11 +75,13 @@ var initOptions = function() {
                 //self.hour = p.hour;
             })
         ];
-    });
 
+        sendMessage();
+    });
 };
 
 var showIcon = function(tabId, changeInfo, tab) {
+    console.log("showIcon");
     //console.log("tabId", tabId);
     //console.log("changeinfo.status", changeinfo.status);
     //console.log("tab.url", tab.url);
@@ -77,12 +91,12 @@ var showIcon = function(tabId, changeInfo, tab) {
 };
 
 chrome.webNavigation.onCompleted.addListener(function(tab) {
+    console.log("chrome.webNavigation.onCompleted");
     //console.log("tab", tab);
     if (tab.frameId !== 0)
         return ;
 
     initOptions();
-    initMessage();
     chrome.tabs.onUpdated.addListener(showIcon);
 });
 

@@ -1,23 +1,36 @@
 
 console.log("facilities.view.js");
 
-$(document).ready(function() {
+var all;
 
+var match = function(value, plan) {
+    var yes = false;
+    $.each(plan.hour, function(i, o) {
+        var guess = o + ":00:00;" + (o + 1) + ":00:00";
+        yes = yes || value.indexOf(guess) != -1;
+    });
+    return yes;
+};
+
+$(document).ready(function() {
     window.addEventListener("message", function(event) {
         if (event.origin !== window.location.origin)
             return ;
 
-        var all = event.data;
-        //console.log("facilities.view.js receive", event); debugger;
+        console.log("facilities.view.js receive", event);
+        all = event.data;
 
+        var quota = 2;
         $.each($.grep($("input[name='timeslots[]']"), function(o, i) {
             console.log("grep: " + i, o.value);
 
-            return all.plan[0].match(o.value);
+            return match(o.value, all.option.plan[0]);
         }, false), function(i, o) {
             console.log("each: " + i, o.value);
 
-            o.checked = true;
+            if (quota > 0)
+                o.checked = true;
+            quota--;
         });
 
         //$("#paynow").click();
