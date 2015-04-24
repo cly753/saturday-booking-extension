@@ -15,16 +15,11 @@ var all = {
         venue: {
 
         }
-    }
+    },
+    action: ''
 };
 
-var sent = false;
-
 var sendMessage = function() {
-    //if (sent)
-    //    return ;
-    sent = true;
-
     console.log("sendMessage");
 
     chrome.tabs.query({
@@ -44,6 +39,9 @@ var initOptions = function() {
         for (var key in changes) {
             all.option[key] = changes[key].newValue;
         }
+
+        all.action = 'refresh';
+        sendMessage();
     });
 
     chrome.storage.sync.get({
@@ -76,6 +74,7 @@ var initOptions = function() {
             })
         ];
 
+        all.action = 'loaded';
         sendMessage();
     });
 };
@@ -96,7 +95,7 @@ chrome.webNavigation.onCompleted.addListener(function(tab) {
     if (tab.frameId !== 0)
         return ;
 
-    initOptions();
+    //initOptions();
     chrome.tabs.onUpdated.addListener(showIcon);
 });
 

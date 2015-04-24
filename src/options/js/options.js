@@ -1,31 +1,46 @@
+
+var all = {
+    option: {
+        username: '',
+        password: '',
+        host: '',
+        plan: []
+    },
+    id: {
+        activity: {
+            "Volleyball" : 293
+        },
+        venue: {
+            "MOE (Evans) Outdoor Facilities" : 249
+        }
+    },
+    action: undefined
+};
+
 var saveOptions = function() {
-    var username = $("#username").val();
-    var password = $("#password").val();
-    var host = $("#host").val();
+    all.option.username = $("#username").val();
+    all.option.password = $("#password").val();
+    all.option.host = $("#host").val();
     //var match = $("#match").val();
 
-    console.log("username", username);
     chrome.storage.sync.set({
-        username: username,
-        password: password,
-        host: host
-        //match: match
+        all: all
     }, function() {
-        $("#saveButton").prop('value', 'Save !');
+        console.log('set allll', allll);
+        $("#saveButton").prop('text', 'Save !');
     });
 };
 
 var restoreOptions = function() {
     chrome.storage.sync.get({
-        username: '',
-        password: '',
-        host: '',
-        plan: []
+        all: all
     }, function(store) {
-        $("#username").val(store.username);
-        $("#password").val(store.password);
-        $("#host").val(store.host);
-        //$("#match").val(store.plan);
+        all = store.all;
+        console.log('restore', all);
+
+        $("#username").val(all.option.username);
+        $("#password").val(all.option.password);
+        $("#host").val(all.option.host);
     });
 };
 
