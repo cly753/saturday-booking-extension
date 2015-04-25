@@ -1,3 +1,4 @@
+
 var conf = {
     image: [
         {
@@ -28,7 +29,7 @@ $(document).ready(function() {
 
     $("#book").click(function() {
         chrome.storage.sync.get({
-            conf: {}
+            all: {}
         }, function(store) {
             var all = store.all;
             console.log('book restore', all);

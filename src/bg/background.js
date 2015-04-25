@@ -1,62 +1,40 @@
 
-var sendMessage = function() {
-    //console.log("sendMessage");
-    //
-    //chrome.tabs.query({
-    //    url: 'https://' + all.option.host + '/*'
-    //}, function(tabs) {
-    //    //console.log("Query tabs", tabs);
-    //    //console.log('all', all);
-    //    chrome.tabs.sendMessage(tabs[0].id, all, function(response) {
-    //        console.log("Message received.");
-    //    });
-    //});
+var track = {
+    // 137: 0 // windowId: index
 };
 
-var initOptions = function() {
-    //chrome.storage.onChanged.addListener(function(changes, area) {
-    //    console.log("chrome.storage.onChanged", changes);
-    //    for (var key in changes) {
-    //        all.option[key] = changes[key].newValue;
-    //    }
-    //
-    //    all.action = 'refresh';
-    //    sendMessage();
-    //});
-    //
-    //chrome.storage.sync.get({
-    //    username: '',
-    //    password: '',
-    //    host: '',
-    //    plan: []
-    //}, function(store) {
-    //    console.log("chrome.storage.sync.get", store);
-    //
-    //    all.option.username = store.username;
-    //    all.option.password = store.password;
-    //    all.option.host = store.host;
-    //    //all.option.plan = store.plan;
-    //    all.option.plan = [
-    //        new Plan({
-    //            priority: 0,
-    //            activity: "Volleyball",
-    //            venue: "MOE (Evans) Outdoor Facilities",
-    //            date: moment("2015-04-26"),
-    //            hour: [
-    //                16,
-    //                17
-    //            ]
-    //            //self.priority = p.priority;
-    //            //self.activity = p.activity;
-    //            //self.venue = p.venue;
-    //            //self.date = p.date;
-    //            //self.hour = p.hour;
-    //        })
-    //    ];
-    //
-    //    all.action = 'loaded';
-    //    sendMessage();
-    //});
+var getImageIndex = function(windowId, callback) {
+    chrome.windows.getAll(function(allWindows) {
+        var used = {};
+        var newTrack = {};
+
+        debugger;
+        $.each(allWindows, function(i, w) {
+            if (track[w.id] !== undefined) {
+                newTrack[w.id] = track[w.id];
+                used[track[w.id]] = w.id;
+            }
+        });
+
+        if (newTrack[windowId] === undefined) {
+            var i = -1;
+            var find = false;
+            while (!find) {
+                i++;
+                if (used[i] === undefined)
+                    find = true;
+
+                if (i > 10) {
+                    console.log("ERROR getImageIndex while loop...");
+                    break;
+                }
+            }
+            newTrack[windowId] = i;
+        }
+
+        track = newTrack;
+        callback({imageIndex: newTrack[windowId]});
+    });
 };
 
 var showIcon = function(tabId, changeInfo, tab) {
@@ -70,6 +48,7 @@ var showIcon = function(tabId, changeInfo, tab) {
 };
 
 (function() {
+
     chrome.webNavigation.onCompleted.addListener(function(tab) {
         console.log("chrome.webNavigation.onCompleted tab", tab);
         if (tab.frameId !== 0)
@@ -77,6 +56,14 @@ var showIcon = function(tabId, changeInfo, tab) {
     });
 
     chrome.tabs.onUpdated.addListener(showIcon);
+
+    chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+        console.log('background receive request', request);
+        if (request !== undefined && request.action === 'getImageIndex') {
+            console.log('background receive request valid');
+            getImageIndex(request.windowId, sendResponse);
+        }
+    });
 })();
 
 

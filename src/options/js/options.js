@@ -25,8 +25,7 @@ var conf = {
                 password: ''
             },
             plan: [],
-            action: '',
-            using: false
+            action: ''
         }
     ],
     host: '',
