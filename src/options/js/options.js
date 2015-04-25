@@ -14,7 +14,30 @@ var all = {
             "MOE (Evans) Outdoor Facilities" : 249
         }
     },
-    action: undefined
+    action: ''
+};
+
+var conf = {
+    image: [
+        {
+            user: {
+                username: '',
+                password: ''
+            },
+            plan: [],
+            action: '',
+            using: false
+        }
+    ],
+    host: '',
+    id: {
+        activity: {
+            "Volleyball" : 293
+        },
+        venue: {
+            "MOE (Evans) Outdoor Facilities" : 249
+        }
+    }
 };
 
 var saveOptions = function() {

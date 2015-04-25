@@ -1,19 +1,57 @@
+var conf = {
+    image: [
+        {
+            user: {
+                username: '',
+                password: ''
+            },
+            plan: [],
+            action: '',
+            using: false
+        }
+    ],
+    host: '',
+    id: {
+        activity: {
+            "Volleyball" : 293
+        },
+        venue: {
+            "MOE (Evans) Outdoor Facilities" : 249
+        }
+    }
+};
 
 $(document).ready(function() {
     $("#option").click(function() {
         chrome.runtime.openOptionsPage(function() {});
     });
 
-    $("#start").click(function() {
-        chrome.tabs.query({
-            url: 'https://' + all.option.host + '/*'
-        }, function(tabs) {
-            //console.log("Query tabs", tabs);
-            //console.log('all', all);
-            chrome.tabs.sendMessage(tabs[0].id, {
-                action: 'start'
-            }, function(response) {
-                console.log("Message received.");
+    $("#book").click(function() {
+        chrome.storage.sync.get({
+            conf: {}
+        }, function(store) {
+            var all = store.all;
+            console.log('book restore', all);
+            all.action = 'book';
+            chrome.storage.sync.set({
+                all: all
+            }, function() {
+                console.log('book set');
+            });
+        });
+    });
+
+    $("#signIn").click(function() {
+        chrome.storage.sync.get({
+            all: {}
+        }, function(store) {
+            var all = store.all;
+            console.log('signIn restore', all);
+            all.action = 'signIn';
+            chrome.storage.sync.set({
+                all: all
+            }, function() {
+                console.log('signIn set');
             });
         });
     });

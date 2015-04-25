@@ -13,26 +13,26 @@ var match = function(value, plan) {
 };
 
 $(document).ready(function() {
-    window.addEventListener("message", function(event) {
-        if (event.origin !== window.location.origin)
-            return ;
-
-        console.log("facilities.view.js receive", event);
-        all = event.data;
-
-        var quota = 2;
-        $.each($.grep($("input[name='timeslots[]']"), function(o, i) {
-            console.log("grep: " + i, o.value);
-
-            return match(o.value, all.option.plan[0]);
-        }, false), function(i, o) {
-            console.log("each: " + i, o.value);
-
-            if (quota > 0)
-                o.checked = true;
-            quota--;
-        });
-
-        //$("#paynow").click();
-    }, false);
+    //window.addEventListener("message", function(event) {
+    //    if (event.origin !== window.location.origin)
+    //        return ;
+    //
+    //    console.log("facilities.view.js receive", event);
+    //    all = event.data;
+    //
+    //    var quota = 2;
+    //    $.each($.grep($("input[name='timeslots[]']"), function(o, i) {
+    //        console.log("grep: " + i, o.value);
+    //
+    //        return match(o.value, all.option.plan[0]);
+    //    }, false), function(i, o) {
+    //        console.log("each: " + i, o.value);
+    //
+    //        if (quota > 0)
+    //            o.checked = true;
+    //        quota--;
+    //    });
+    //
+    //    //$("#paynow").click();
+    //}, false);
 });
