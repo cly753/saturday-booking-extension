@@ -9,8 +9,8 @@ $(document).ready(function() {
     //
     //    var all = event.data;
     //
-    //    $("#email").val(all.option.username);
-    //    $("#password").val(all.option.password);
+    //    $("#email").val(all.user.username);
+    //    $("#password").val(all.user.password);
     //    $("#btn-submit-login").trigger("click");
     //}, false);
 });

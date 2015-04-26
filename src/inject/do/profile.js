@@ -12,6 +12,6 @@ $(document).ready(function() {
     //    //console.log("profile.js receive", event); debugger;
     //    all = event.data;
     //
-    //    window.location.replace("https://" + window.location.host + all.option.plan[0].bookUrlSuffix);
+    //    window.location.replace("https://" + window.location.host + all.plan.bookUrlSuffix);
     //}, false);
 });

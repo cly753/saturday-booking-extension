@@ -1,11 +1,11 @@
 var all = {
-    option: {
+    user: {
         username: '',
-        password: '',
-        host: '',
-        plan: []
+        password: ''
     },
-    id: {
+    plan: {},
+    host: '',
+    index: {
         activity: {
             "Volleyball" : 293
         },
@@ -14,28 +14,6 @@ var all = {
         }
     },
     action: ''
-};
-
-var conf = {
-    image: [
-        {
-            user: {
-                username: '',
-                password: ''
-            },
-            plan: [],
-            action: ''
-        }
-    ],
-    host: '',
-    id: {
-        activity: {
-            "Volleyball" : 293
-        },
-        venue: {
-            "MOE (Evans) Outdoor Facilities" : 249
-        }
-    }
 };
 
 var hostRegex = window.location.host.replace(/\./g, "\\.");
@@ -66,8 +44,11 @@ var inject = function(src) {
 
 var resetAndDo = function(name, todo) {
     all.action = '';
+
+    var tempAll = $.extend(true, {}, all);
+    tempAll.plan = all.plan.storeFormat();
     chrome.storage.sync.set({
-        all: all
+        all: tempAll
     }, function() {
         console.log(name + ' reset todo', todo);
         if (todo !== undefined)
@@ -87,7 +68,7 @@ var signIn = function() {
     if (text !== "Sign In")
         console.log("error loggedIn text", text);
 
-    var target = "https://" + all.option.host + "/auth";
+    var target = "https://" + all.host + "/auth";
 
     console.log('href', window.location.href);
     console.log('reg.auth', reg.auth);
@@ -96,8 +77,8 @@ var signIn = function() {
         return ;
     }
 
-    $("#email").val(all.option.username);
-    $("#password").val(all.option.password);
+    $("#email").val(all.user.username);
+    $("#password").val(all.user.password);
 
     resetAndDo('signIn', function() {
         $("#btn-submit-login").trigger("click");
@@ -105,7 +86,7 @@ var signIn = function() {
 };
 
 var updateIndex = function() {
-    var target = "https://" + all.option.host + "/facilities";
+    var target = "https://" + all.host + "/facilities";
     if (window.location.href !== target) {
         window.location.replace(target);
         return ;
@@ -117,32 +98,54 @@ var updateIndex = function() {
 };
 
 var book = function() {
-    var target = "https://" + all.option.host + all.option.plan[0].bookUrlSuffix;
+    //debugger;
+    if (all.plan.openDate.diff(moment()) > 10000) {
+        console.log('It\'s not the time, going to sleep...');
+        setTimeout(function() {window.location.reload()}, 5000);
+        return ;
+    }
+
+    var target = "https://" + all.host + all.plan.bookUrlSuffix;
     console.log('book target', target);
     if (window.location.href !== target) {
         window.location.replace(target);
         return ;
     }
 
+    if ($(".subvenue-slot").length === 0) {
+        if (all.plan.openDate.diff(moment()) < -5000) {
+            console.log('ERROR time reached but no slot found.');
+            resetAndDo('book');
+            return ;
+        }
+        console.log('It\'s not the time, going to sleep...');
+        setTimeout(function() {window.location.reload()}, 100);
+        return ;
+    }
+
     var quota = 2;
-    $.each($.grep($("input[name='timeslots[]']"), function(o, i) {
-        //console.log("grep " + i, o.value);
+    $.each($("input[name='timeslots[]']"), function(i, o) {
+        //console.log("each " + i, o);
 
         var yes = false;
-        $.each(all.option.plan[0].hour, function(i, h) {
-            var guess = h + ":00:00;" + (h + 1) + ":00:00";
-            yes = yes || o.value.indexOf(guess) != -1;
+        $.each(all.plan.pattern, function(i, p) {
+            yes = yes || (-1 !== o.value.toLowerCase().indexOf(p) && -1 !== o.value.toLowerCase().indexOf(all.plan.additionalPattern.toLowerCase()));
+            //console.log('matching... i: ' + i + ', addi: ' + all.plan.additionalPattern + ', pattern', p);
+            //console.log('result', (-1 !== o.value.toLowerCase().indexOf(p) && -1 !== o.value.toLowerCase().indexOf(all.plan.additionalPattern.toLowerCase())));
         });
-        return yes;
-    }, false), function(i, o) {
-        //console.log("each: " + i, o.value);
 
-        if (quota > 0)
-            o.checked = true;
-        else
-            console.log('too many matches...');
-        quota--;
+        o.checked = false;
+        if (yes) {
+            if (quota > 0)
+                o.checked = true;
+            else
+                console.log('too many matches... ', o);
+            quota--;
+        }
     });
+
+    if (quota !== 0)
+        console.log('WARNING not exactly matched! quota', quota);
 
     resetAndDo('book', function() {
         //$("#paynow").click();
@@ -150,7 +153,7 @@ var book = function() {
 };
 
 var release = function() {
-    var target = "https://" + all.option.host + "/cart";
+    var target = "https://" + all.host + "/cart";
     if (window.location.href !== target) {
         window.location.replace(target);
         return ;
@@ -177,8 +180,14 @@ var doSomething = function() {
         case 'release':
             release();
             break;
+        case 'clearAction':
+            resetAndDo('clearAction');
+            break;
         case '':
             console.log('do nothing.');
+            break;
+        default:
+            console.log('ERROR invalid action.');
             break;
     }
 };
@@ -188,27 +197,26 @@ var doSomething = function() {
         console.log("inject chrome.storage.onChanged", changes);
         for (var key in changes)
             all = changes[key].newValue;
+        all.plan = new Plan(all.plan);
         doSomething();
     });
 
     chrome.storage.sync.get({
         all: all
     }, function(store) {
-        console.log("chrome.storage.sync.get", store);
+        console.log("inject.js chrome.storage.sync.get", store);
         all = store.all;
+        //all.plan.activity = "Volleyball";
+        //all.plan.venue = "MOE (Evans) Outdoor Facilities";
+        all.plan = new Plan(all.plan);
 
-        all.option.plan = [
-            new Plan({
-                priority: 0,
-                activity: "Volleyball",
-                venue: "MOE (Evans) Outdoor Facilities",
-                date: moment("2015-04-26"),
-                hour: [
-                    16,
-                    17
-                ]
-            })
-        ];
+        var tempAll = $.extend(true, {}, all);
+        tempAll.plan = all.plan.storeFormat();
+        chrome.storage.sync.set({
+            all: tempAll
+        }, function() {
+            console.log('store back all', tempAll);
+        });
 
         doSomething();
     });

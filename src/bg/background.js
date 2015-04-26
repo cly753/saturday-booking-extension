@@ -38,10 +38,10 @@ var getImageIndex = function(windowId, callback) {
 };
 
 var showIcon = function(tabId, changeInfo, tab) {
-    console.log("showIcon");
     //console.log("tabId", tabId);
-    //console.log("changeinfo.status", changeinfo.status);
-    //console.log("tab.url", tab.url);
+    //console.log("changeinfo", changeinfo);
+    //console.log("tab", tab);
+    console.log("showIcon");
     if (tab.url === undefined || changeInfo.status !== "complete")
         return ;
     chrome.pageAction.show(tabId);
@@ -56,16 +56,7 @@ var showIcon = function(tabId, changeInfo, tab) {
     });
 
     chrome.tabs.onUpdated.addListener(showIcon);
-
-    chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-        console.log('background receive request', request);
-        if (request !== undefined && request.action === 'getImageIndex') {
-            console.log('background receive request valid');
-            getImageIndex(request.windowId, sendResponse);
-        }
-    });
 })();
-
 
 //, {
 //    url: [{

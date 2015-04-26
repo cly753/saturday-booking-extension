@@ -4,12 +4,12 @@ console.log("facilities.view.js");
 var all;
 
 var match = function(value, plan) {
-    var yes = false;
-    $.each(plan.hour, function(i, o) {
-        var guess = o + ":00:00;" + (o + 1) + ":00:00";
-        yes = yes || value.indexOf(guess) != -1;
-    });
-    return yes;
+    //var yes = false;
+    //$.each(plan.hour, function(i, o) {
+    //    var guess = o + ":00:00;" + (o + 1) + ":00:00";
+    //    yes = yes || value.indexOf(guess) != -1;
+    //});
+    //return yes;
 };
 
 $(document).ready(function() {
@@ -24,7 +24,7 @@ $(document).ready(function() {
     //    $.each($.grep($("input[name='timeslots[]']"), function(o, i) {
     //        console.log("grep: " + i, o.value);
     //
-    //        return match(o.value, all.option.plan[0]);
+    //        return match(o.value, all.plan);
     //    }, false), function(i, o) {
     //        console.log("each: " + i, o.value);
     //

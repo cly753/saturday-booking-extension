@@ -1,12 +1,12 @@
 
 var all = {
-    option: {
+    user: {
         username: '',
-        password: '',
-        host: '',
-        plan: []
+        password: ''
     },
-    id: {
+    plan: {},
+    host: '',
+    index: {
         activity: {
             "Volleyball" : 293
         },
@@ -17,38 +17,16 @@ var all = {
     action: ''
 };
 
-var conf = {
-    image: [
-        {
-            user: {
-                username: '',
-                password: ''
-            },
-            plan: [],
-            action: ''
-        }
-    ],
-    host: '',
-    id: {
-        activity: {
-            "Volleyball" : 293
-        },
-        venue: {
-            "MOE (Evans) Outdoor Facilities" : 249
-        }
-    }
-};
-
 var saveOptions = function() {
-    all.option.username = $("#username").val();
-    all.option.password = $("#password").val();
-    all.option.host = $("#host").val();
+    all.user.username = $("#username").val();
+    all.user.password = $("#password").val();
+    all.host = $("#host").val();
     //var match = $("#match").val();
 
     chrome.storage.sync.set({
         all: all
     }, function() {
-        console.log('set allll', allll);
+        console.log('set all', all);
         $("#saveButton").prop('text', 'Save !');
     });
 };
@@ -60,9 +38,9 @@ var restoreOptions = function() {
         all = store.all;
         console.log('restore', all);
 
-        $("#username").val(all.option.username);
-        $("#password").val(all.option.password);
-        $("#host").val(all.option.host);
+        $("#username").val(all.user.username);
+        $("#password").val(all.user.password);
+        $("#host").val(all.host);
     });
 };
 

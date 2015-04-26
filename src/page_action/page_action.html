@@ -4,7 +4,7 @@
     #mainPopup {
         padding: 10px;
         height: 200px;
-        width: 400px;
+        width: 300px;
         font-family: Helvetica, Ubuntu, Arial, sans-serif;
     }
     h1 {
@@ -13,19 +13,79 @@
 </style>
 
 <div id="mainPopup">
-    <button id="book">
-        Book
-    </button>
-    <button id="signIn">
-        Sign In
-    </button>
-    <button id="updateIndex">
-        Update Index
-    </button>
-    <button id="option">
-        Open Option Page (OOP)
-    </button>
+    <div id="options">
+        <div id="user">
+            <table>
+                <tr>
+                    <td>Username</td>
+                    <td><input type="text" id="username"></td>
+                </tr>
+                <tr>
+                    <td>Password</td>
+                    <td><input type="password" id="password"></td>
+                </tr>
+                <tr>
+                    <td>Host</td>
+                    <td><input type="text" id="host"></td>
+                </tr>
+            </table>
+        </div>
+        <div id="plan">
+            <table>
+                <tr>
+                    <th colspan="2">Plan 0</th>
+                </tr>
+                <tr>
+                    <td>Activity</td>
+                    <td><input type="text" id="planActivity"></td>
+                </tr>
+                <tr>
+                    <td>Venue</td>
+                    <td><input type="text" id="planVenue"></td>
+                </tr>
+                <tr>
+                    <td>Date</td>
+                    <td><input type="text" id="planDate"></td>
+                </tr>
+                <tr>
+                    <td>Hour</td>
+                    <td>
+                        <select id="planHourA">
+                            <option value=-1>skip</option>
+                        </select>
+                        <select id="planHourB">
+                            <option value=-1>skip</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Additional Pattern</td>
+                    <td><input type="text" id="planAdditionalPattern"></td>
+                </tr>
+            </table>
+        </div>
+
+        <button id="refresh">Refresh</button>
+        <button id="save">Save</button>
+    </div>
+
+    <div id="information">
+        <p>Status: <span id="status"></span></p>
+        <p>Current Time: <span id="currentTime"></span></p>
+        <p>Target  Date: <span id="targetDate"></span></p>
+        <p>Open    Date: <span id="openDate"></span></p>
+        <p>Time to go  : <span id="timeToGo"></span> (<span id="timeToGoSecond"></span> seconds)</p>
+    </div>
+
+    <div id="action">
+        <button id="book">Book</button>
+        <button id="signIn">Sign In</button>
+        <button id="updateIndex">Update Index</button>
+        <button id="clearAction">Clear Action</button>
+    </div>
 </div>
 
 <script src="/js/jquery-2.1.3.min.js"></script>
+<script src="/js/moment.js"></script>
+<script src="/src/bg/util.js"></script>
 <script src="/src/page_action/js/page_action.js"></script>
