@@ -7,6 +7,34 @@ var venueId = {
     "MOE (Evans) Outdoor Facilities" : 249
 };
 
+var Action = {
+    signIn: 1,
+    book: 2,
+    release: 3,
+    clear: 4,
+    updateIndex: 5,
+    idle: 6
+};
+var ActionReadable = {
+    1: 'Action-Sign-In',
+    signIn: 'Action-Sign-In',
+
+    book: 'Action-Book',
+    book: 'Action-Book',
+
+    release: 'Action-Release',
+    release: 'Action-Release',
+
+    4: 'Action-Clear',
+    clear: 'Action-Clear',
+
+    5: 'Action-Update-Index',
+    updateIndex: 'Action-Update-Index',
+
+    6: 'Action-Idle',
+    idle: 'Action-Idle'
+}
+
 var Plan = function(p) {
     var self = this;
 
@@ -16,7 +44,7 @@ var Plan = function(p) {
     self.date = moment(p.date);
     self.openDate = moment(p.date);
     self.openDate.subtract(14, 'days').add(7, 'hours');
-    //self.openDate.subtract(14, 'days').add(23, 'hours').add(27, 'minutes');
+    //self.openDate.subtract(14, 'days').add(1, 'hours').add(22, 'minutes');
 
     self.hour = p.hour;
     self.pattern = $.map(self.hour, function(h, i) {

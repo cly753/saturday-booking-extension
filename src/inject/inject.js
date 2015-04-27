@@ -69,7 +69,7 @@ var load = function(callback) {
 
 var popPush = function(name, will) {
     var actionRemoved = all.action.pop();
-    console.log('inject.js popPush actionRemoved', actionRemoved);
+    console.log('inject.js popPush action to remove', ActionReadable[actionRemoved]);
 
     if (will !== undefined)
         all.action.push(will);
@@ -78,14 +78,14 @@ var popPush = function(name, will) {
 };
 
 var signIn = function() {
-    console.log('action: signIn');
+    console.log(ActionReadable.signIn);
 
     var text = $("li.mms-nav").find("span.title").text();
-    console.log('signIn text', text);
+    console.log('text', text);
 
     if (text === "My Account") {
         console.log('Already signed in.');
-        popPush('signIn');
+        popPush(ActionReadable.signIn);
         return ;
     }
 
@@ -107,7 +107,7 @@ var signIn = function() {
 };
 
 var updateIndex = function() {
-    console.log('action: updateIndex');
+    console.log(ActionReadable.updateIndex);
 
     var target = "https://" + all.host + "/facilities";
     if (window.location.href !== target) {
@@ -117,23 +117,15 @@ var updateIndex = function() {
 
     // ...
 
-    popPush('updateIndex');
+    popPush(ActionReadable.updateIndex);
 };
 
 var book = function() {
-    console.log('action: book');
+    console.log(ActionReadable.book);
 
-    if (all.plan.openDate.diff(moment()) > 30000) {
+    if (all.plan.openDate.diff(moment()) > 60000) {
         console.log('It\'s not the time, going to sleep...');
-        setTimeout(function() {window.location.reload()}, 15000);
-        return ;
-    }
-
-    var text = $("li.mms-nav").find("span.title").text();
-    if (text !== "My Account") {
-        console.log('text: ' + text + ' (Not signed in. Going to sign in...)');
-        all.action.push('signIn');
-        save();
+        setTimeout(function() {window.location.reload()}, 40000);
         return ;
     }
 
@@ -144,6 +136,14 @@ var book = function() {
         return ;
     }
 
+    var text = $("li.mms-nav").find("span.title").text();
+    if (text !== "My Account") {
+        console.log('text: ' + text + ' (Not signed in. Going to sign in...)');
+        all.action.push(Action.signIn);
+        save();
+        return ;
+    }
+
     if (all.plan.openDate.diff(moment()) > 5000) {
         console.log('It\'s not the time, going to sleep...');
         setTimeout(function() {window.location.reload()}, 3000);
@@ -151,13 +151,13 @@ var book = function() {
     }
 
     if ($(".subvenue-slot").length === 0) {
-        if (all.plan.openDate.diff(moment()) < -5000) {
+        if (all.plan.openDate.diff(moment()) < -3000) {
             console.log('[ERROR] time reached but no slot found.');
-            popPush('book');
+            popPush(ActionReadable.book);
             return ;
         }
         console.log('It\'s not the time, going to sleep...');
-        setTimeout(function() {window.location.reload()}, 100);
+        setTimeout(function() {window.location.reload()}, 300);
         return ;
     }
 
@@ -168,8 +168,7 @@ var book = function() {
         var yes = false;
         $.each(all.plan.pattern, function(i, p) {
             yes = yes || (-1 !== o.value.toLowerCase().indexOf(p) && -1 !== o.value.toLowerCase().indexOf(all.plan.additionalPattern.toLowerCase()));
-            //console.log('matching... i: ' + i + ', addi: ' + all.plan.additionalPattern + ', pattern', p);
-            //console.log('result', (-1 !== o.value.toLowerCase().indexOf(p) && -1 !== o.value.toLowerCase().indexOf(all.plan.additionalPattern.toLowerCase())));
+            //console.log('matching... i: ' + i + ', addi: ' + all.plan.additionalPattern + ', pattern', p); console.log('result', (-1 !== o.value.toLowerCase().indexOf(p) && -1 !== o.value.toLowerCase().indexOf(all.plan.additionalPattern.toLowerCase())));
         });
 
         o.checked = false;
@@ -190,7 +189,7 @@ var book = function() {
 };
 
 var release = function() {
-    console.log('action: release');
+    console.log(ActionReadable.release);
 
     var target = "https://" + all.host + "/cart";
     if (window.location.href !== target) {
@@ -200,30 +199,31 @@ var release = function() {
 
     // ...
 
-    popPush('release');
+    popPush(ActionReadable.release);
 };
 
 var doSomething = function() {
-    console.log('doSomething action', all);
+    //console.log('doSomething action', all);
 
     var topAction = all.action.pop(); if (topAction !== undefined) all.action.push(topAction);
     switch (topAction) {
-        case 'book':
+        case Action.book:
             book();
             break;
-        case 'signIn':
+        case Action.signIn:
             signIn();
             break;
-        case 'updateIndex':
+        case Action.updateIndex:
             updateIndex();
             break;
-        case 'release':
+        case Action.release:
             release();
             break;
-        case 'clearAction':
+        case Action.clear:
             all.action = [];
-            popPush('clearAction');
+            popPush(ActionReadable.clear);
             break;
+        case Action.idle:
         case undefined:
             console.log('topAction: undefined, do nothing.');
             break;
@@ -243,16 +243,5 @@ var doSomething = function() {
     });
 
     load(doSomething);
-
-    //chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    //    console.log('request', request);
-    //    console.log('sender', sender);
-    //    console.log('sendResponse', sendResponse);
-    //
-    //    if (request.action !== undefined)
-    //          all.action.push(request.action);
-    //    doSomething();
-    //    sendResponse({});
-    //});
 })();
 
