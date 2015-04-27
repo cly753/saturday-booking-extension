@@ -19,10 +19,10 @@ var ActionReadable = {
     1: 'Action-Sign-In',
     signIn: 'Action-Sign-In',
 
-    book: 'Action-Book',
+    2: 'Action-Book',
     book: 'Action-Book',
 
-    release: 'Action-Release',
+    3: 'Action-Release',
     release: 'Action-Release',
 
     4: 'Action-Clear',

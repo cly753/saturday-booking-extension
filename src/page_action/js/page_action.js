@@ -30,7 +30,7 @@ var inform = function(event) {
         var all = store.all;
         all.plan = new Plan(all.plan);
 
-        console.log(ActionReadable[event.target.value] + ' store', all);
+        console.log(ActionReadable[parseInt(event.target.value)] + ' store', all);
         all.action.push(parseInt(event.target.value));
 
         var tempAll = $.extend(true, {}, all);
@@ -38,7 +38,7 @@ var inform = function(event) {
         chrome.storage.sync.set({
             all: tempAll
         }, function() {
-            console.log(ActionReadable[event.target.value] + ' set');
+            console.log(ActionReadable[parseInt(event.target.value)] + ' set');
         });
     });
 };
@@ -57,7 +57,13 @@ var update = function() {
         $("#planHourB").val(all.plan.hour[1] + '');
     $("#planAdditionalPattern").val(all.plan.additionalPattern);
 
-    $("#status").text(all.action.reduce(function(a, b) { return ActionReadable[a] + ' > ' + ActionReadable[b]; }, '-'));
+    $("#status").text(all.action.reduce(function(a, b) {
+        console.log('a', a);
+        console.log('b', b);
+        console.log('ActionReadable[a]', ActionReadable[a]);
+        console.log('ActionReadable[b]', ActionReadable[b]);
+        return ActionReadable[a] + ' > ' + ActionReadable[b];
+    }, 6));
     $("#targetDate").text(all.plan.date.format());
     $("#openDate").text(all.plan.openDate.format());
 };
