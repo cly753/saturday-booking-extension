@@ -14,7 +14,7 @@
 
 <div id="mainPopup">
     <div id="options">
-        <div id="user">
+        <!--<div id="user">-->
             <table>
                 <tr>
                     <td>Username</td>
@@ -28,12 +28,12 @@
                     <td>Host</td>
                     <td><input type="text" id="host"></td>
                 </tr>
-            </table>
-        </div>
-        <div id="plan">
-            <table>
+            <!--</table>-->
+        <!--</div>-->
+        <!--<div id="plan">-->
+            <!--<table>-->
                 <tr>
-                    <th colspan="2">Plan 0</th>
+                    <th>Plan 0</th>
                 </tr>
                 <tr>
                     <td>Activity</td>
@@ -63,18 +63,22 @@
                     <td><input type="text" id="planAdditionalPattern"></td>
                 </tr>
             </table>
-        </div>
+        <!--</div>-->
 
         <button id="refresh">Refresh</button>
         <button id="save">Save</button>
     </div>
 
     <div id="information">
-        <p>Status: <span id="status"></span></p>
-        <p>Current Time: <span id="currentTime"></span></p>
-        <p>Target  Date: <span id="targetDate"></span></p>
-        <p>Open    Date: <span id="openDate"></span></p>
-        <p>Time to go  : <span id="timeToGo"></span> (<span id="timeToGoSecond"></span> seconds)</p>
+        <table id="informationTable">
+            <tr><th>Information</th></tr>
+            <tr><td>Status</td><td><span id="status"></span></td></tr>
+            <tr><td>Current Time</td><td><span id="currentTime"></span></td></tr>
+            <tr><td>Target Date</td><td><span id="targetDate"></span></td></tr>
+            <tr><td>Open Date</td><td><span id="openDate"></span></td></tr>
+            <tr><td>Time To Go</td><td><span id="timeToGo"></span></td></tr>
+            <tr><td>~</td><td><span id="timeToGoAbout"></span></td></tr>
+        </table>
     </div>
 
     <div id="action">

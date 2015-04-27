@@ -15,8 +15,8 @@ var Plan = function(p) {
 
     self.date = moment(p.date);
     self.openDate = moment(p.date);
-    //self.openDate.subtract(15, 'days').add(7, 'hours');
-    self.openDate.subtract(14, 'days').add(17, 'hours').add(16, 'minutes');
+    self.openDate.subtract(14, 'days').add(7, 'hours');
+    //self.openDate.subtract(14, 'days').add(23, 'hours').add(27, 'minutes');
 
     self.hour = p.hour;
     self.pattern = $.map(self.hour, function(h, i) {

@@ -20,7 +20,7 @@ var all = {
             "MOE (Evans) Outdoor Facilities" : 249
         }
     },
-    action: ''
+    action: []
 };
 
 var inform = function(event) {
@@ -31,7 +31,7 @@ var inform = function(event) {
         all.plan = new Plan(all.plan);
 
         console.log(event.target.id + ' store', all);
-        all.action = event.target.id;
+        all.action.push(event.target.id);
 
         var tempAll = $.extend(true, {}, all);
         tempAll.plan = all.plan.storeFormat();
@@ -57,7 +57,7 @@ var update = function() {
         $("#planHourB").val(all.plan.hour[1] + '');
     $("#planAdditionalPattern").val(all.plan.additionalPattern);
 
-    $("#status").text(all.action === '' ? 'idle' : all.action);
+    $("#status").text(all.action.reduce(function(a, b) { return a + ' > ' + b; }, '-'));
     $("#targetDate").text(all.plan.date.format());
     $("#openDate").text(all.plan.openDate.format());
 };
@@ -65,10 +65,10 @@ var clock = function() {
     $("#currentTime").text(moment().format());
 
     if (all !== undefined && all.plan.openDate !== undefined) {
-
         var dura = moment.duration(all.plan.openDate.diff(moment()));
-        $("#timeToGo").text(dura.humanize(true));
-        $("#timeToGoSecond").text(dura.asSeconds());
+        var huma = dura.get('days') + ' days ' + dura.get('hours') + ' hours ' + dura.get('minutes') + ' minutes ' + dura.get('seconds') + ' seconds';
+        $("#timeToGo").text(huma);
+        $("#timeToGoAbout").text(dura.humanize(true));
     }
 
     setTimeout(function() {

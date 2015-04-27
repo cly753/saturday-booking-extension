@@ -13,7 +13,7 @@ var all = {
             "MOE (Evans) Outdoor Facilities" : 249
         }
     },
-    action: ''
+    action: []
 };
 
 var hostRegex = window.location.host.replace(/\./g, "\\.");
@@ -32,6 +32,8 @@ var reg = {
 };
 
 var inject = function(src) {
+    console.log('.....: inject');
+
     var s = document.createElement('script');
     s.src = chrome.extension.getURL(src);
     s.onload = function() {
@@ -42,26 +44,48 @@ var inject = function(src) {
     (document.head||document.documentElement).appendChild(s);
 };
 
-var resetAndDo = function(name, todo) {
-    all.action = '';
-
+var save = function(callback) {
     var tempAll = $.extend(true, {}, all);
     tempAll.plan = all.plan.storeFormat();
     chrome.storage.sync.set({
         all: tempAll
     }, function() {
-        console.log(name + ' reset todo', todo);
-        if (todo !== undefined)
-            todo();
+        if (callback !== undefined) callback();
+    });
+};
+var load = function(callback) {
+    chrome.storage.sync.get({
+        all: all
+    }, function(store) {
+        console.log("inject.js restore chrome.storage.sync.get", store);
+        all = store.all;
+        //all.plan.activity = "Volleyball";
+        //all.plan.venue = "MOE (Evans) Outdoor Facilities";
+        all.plan = new Plan(all.plan);
+
+        if (callback !== undefined) callback();
     });
 };
 
+var popPush = function(name, will) {
+    var actionRemoved = all.action.pop();
+    console.log('inject.js popPush actionRemoved', actionRemoved);
+
+    if (will !== undefined)
+        all.action.push(will);
+
+    save(function() { console.log(name + ' popped'); });
+};
+
 var signIn = function() {
+    console.log('action: signIn');
+
     var text = $("li.mms-nav").find("span.title").text();
     console.log('signIn text', text);
 
     if (text === "My Account") {
-        resetAndDo('signIn', function() {console.log('Already signed in.');});
+        console.log('Already signed in.');
+        popPush('signIn');
         return ;
     }
 
@@ -79,13 +103,12 @@ var signIn = function() {
 
     $("#email").val(all.user.username);
     $("#password").val(all.user.password);
-
-    resetAndDo('signIn', function() {
-        $("#btn-submit-login").trigger("click");
-    });
+    $("#btn-submit-login").trigger("click");
 };
 
 var updateIndex = function() {
+    console.log('action: updateIndex');
+
     var target = "https://" + all.host + "/facilities";
     if (window.location.href !== target) {
         window.location.replace(target);
@@ -94,14 +117,23 @@ var updateIndex = function() {
 
     // ...
 
-    resetAndDo('updateIndex');
+    popPush('updateIndex');
 };
 
 var book = function() {
-    //debugger;
-    if (all.plan.openDate.diff(moment()) > 10000) {
+    console.log('action: book');
+
+    if (all.plan.openDate.diff(moment()) > 30000) {
         console.log('It\'s not the time, going to sleep...');
-        setTimeout(function() {window.location.reload()}, 5000);
+        setTimeout(function() {window.location.reload()}, 15000);
+        return ;
+    }
+
+    var text = $("li.mms-nav").find("span.title").text();
+    if (text !== "My Account") {
+        console.log('text: ' + text + ' (Not signed in. Going to sign in...)');
+        all.action.push('signIn');
+        save();
         return ;
     }
 
@@ -112,10 +144,16 @@ var book = function() {
         return ;
     }
 
+    if (all.plan.openDate.diff(moment()) > 5000) {
+        console.log('It\'s not the time, going to sleep...');
+        setTimeout(function() {window.location.reload()}, 3000);
+        return ;
+    }
+
     if ($(".subvenue-slot").length === 0) {
         if (all.plan.openDate.diff(moment()) < -5000) {
-            console.log('ERROR time reached but no slot found.');
-            resetAndDo('book');
+            console.log('[ERROR] time reached but no slot found.');
+            popPush('book');
             return ;
         }
         console.log('It\'s not the time, going to sleep...');
@@ -147,12 +185,13 @@ var book = function() {
     if (quota !== 0)
         console.log('WARNING not exactly matched! quota', quota);
 
-    resetAndDo('book', function() {
-        //$("#paynow").click();
-    });
+    $("#paynow").click();
+    popPush('book');
 };
 
 var release = function() {
+    console.log('action: release');
+
     var target = "https://" + all.host + "/cart";
     if (window.location.href !== target) {
         window.location.replace(target);
@@ -161,13 +200,14 @@ var release = function() {
 
     // ...
 
-    resetAndDo('release');
+    popPush('release');
 };
 
 var doSomething = function() {
     console.log('doSomething action', all);
 
-    switch (all.action) {
+    var topAction = all.action.pop(); if (topAction !== undefined) all.action.push(topAction);
+    switch (topAction) {
         case 'book':
             book();
             break;
@@ -181,10 +221,11 @@ var doSomething = function() {
             release();
             break;
         case 'clearAction':
-            resetAndDo('clearAction');
+            all.action = [];
+            popPush('clearAction');
             break;
-        case '':
-            console.log('do nothing.');
+        case undefined:
+            console.log('topAction: undefined, do nothing.');
             break;
         default:
             console.log('ERROR invalid action.');
@@ -201,25 +242,7 @@ var doSomething = function() {
         doSomething();
     });
 
-    chrome.storage.sync.get({
-        all: all
-    }, function(store) {
-        console.log("inject.js chrome.storage.sync.get", store);
-        all = store.all;
-        //all.plan.activity = "Volleyball";
-        //all.plan.venue = "MOE (Evans) Outdoor Facilities";
-        all.plan = new Plan(all.plan);
-
-        var tempAll = $.extend(true, {}, all);
-        tempAll.plan = all.plan.storeFormat();
-        chrome.storage.sync.set({
-            all: tempAll
-        }, function() {
-            console.log('store back all', tempAll);
-        });
-
-        doSomething();
-    });
+    load(doSomething);
 
     //chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     //    console.log('request', request);
@@ -227,7 +250,7 @@ var doSomething = function() {
     //    console.log('sendResponse', sendResponse);
     //
     //    if (request.action !== undefined)
-    //        all.action = request.action;
+    //          all.action.push(request.action);
     //    doSomething();
     //    sendResponse({});
     //});
