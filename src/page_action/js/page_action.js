@@ -30,8 +30,10 @@ var update = function() {
     $('select#planHourB').material_select();
 
     $("#status").text(all.action.reduce(function(a, b) { return ActionReadable[a] + ' > ' + ActionReadable[b]; }, ActionReadable.idle));
-    $("#openDate").text(all.plan.openDate.format('DD MMMM, YYYY HH:mm:ss'));
+    $("#openDate").val(all.plan.openDate.format('DD MMMM, YYYY HH:mm:ss'));
+    $("#openDate").change();
 };
+
 var clock = function() {
     if (all === undefined || all.plan.openDate === undefined)
         return ;
