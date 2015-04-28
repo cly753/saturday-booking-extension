@@ -3,93 +3,56 @@
 <style type="text/css">
     #mainPopup {
         padding: 10px;
-        height: 200px;
-        width: 300px;
-        font-family: Helvetica, Ubuntu, Arial, sans-serif;
-    }
-    h1 {
-        font-size: 2em;
+        /*height: 200px;*/
+        width: 400px;
     }
 </style>
+<link rel="stylesheet" href="/external/materialize/css/materialize.min.css">
 
-<div id="mainPopup">
-    <div id="options">
-        <!--<div id="user">-->
-            <table>
-                <tr>
-                    <td>Username</td>
-                    <td><input type="text" id="username"></td>
-                </tr>
-                <tr>
-                    <td>Password</td>
-                    <td><input type="password" id="password"></td>
-                </tr>
-                <tr>
-                    <td>Host</td>
-                    <td><input type="text" id="host"></td>
-                </tr>
-            <!--</table>-->
-        <!--</div>-->
-        <!--<div id="plan">-->
-            <!--<table>-->
-                <tr>
-                    <th>Plan 0</th>
-                </tr>
-                <tr>
-                    <td>Activity</td>
-                    <td><input type="text" id="planActivity"></td>
-                </tr>
-                <tr>
-                    <td>Venue</td>
-                    <td><input type="text" id="planVenue"></td>
-                </tr>
-                <tr>
-                    <td>Date</td>
-                    <td><input type="text" id="planDate"></td>
-                </tr>
-                <tr>
-                    <td>Hour</td>
-                    <td>
-                        <select id="planHourA">
-                            <option value=-1>skip</option>
-                        </select>
-                        <select id="planHourB">
-                            <option value=-1>skip</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Additional Pattern</td>
-                    <td><input type="text" id="planAdditionalPattern"></td>
-                </tr>
-            </table>
-        <!--</div>-->
-
-        <button id="refresh">Refresh</button>
-        <button id="save">Save</button>
-    </div>
-
-    <div id="information">
-        <table id="informationTable">
-            <tr><th>Information</th></tr>
-            <tr><td>Status</td><td><span id="status"></span></td></tr>
-            <tr><td>Current Time</td><td><span id="currentTime"></span></td></tr>
-            <tr><td>Target Date</td><td><span id="targetDate"></span></td></tr>
-            <tr><td>Open Date</td><td><span id="openDate"></span></td></tr>
-            <tr><td>Time To Go</td><td><span id="timeToGo"></span></td></tr>
-            <tr><td>~</td><td><span id="timeToGoAbout"></span></td></tr>
-        </table>
-    </div>
-
-    <div id="action">
-        <button id="book" value="2">Book</button>
-        <button id="signIn" value="1">Sign In</button>
-        <button id="updateIndex" value="5">Update Index</button>
-        <button id="clearAction" value="4">Clear Action</button>
+<div id="mainPopup" class="container">
+    <div class="row" style="margin-bottom: 0px;">
+        <div class="input-field col s3"><input type="text" id="username" class="validate"><label for="username">Username</label></div>
+        <div class="input-field col s3"><input type="password" id="password" class="validate"><label for="password">Password</label></div>
+        <div class="input-field col s6"><input type="text" id="host"><label for="host">Host</label></div>
+        <div class="input-field col s4"><select id="planActivity"></select><label for="planActivity">Activity</label></div>
+        <div class="input-field col s8"><select id="planVenue"></select><label for="planVenue">Venue</label></div>
+        <div class="input-field col s6"><input type="date" id="planDate" class="datepicker"><label for="planDate">Date</label></div>
+        <div class="input-field col s3"><select id="planHourA"><option value=-1>skip</option></select><label for="planHourA">1st</label></div>
+        <div class="input-field col s3"><select id="planHourB"><option value=-1>skip</option></select><label for="planHourB">2nd</label></div>
+        <div class="col s3">
+            <div class="input-field col s12">
+                <!--<button id="refresh" class="btn waves-effect waves-light">Refresh</button>-->
+                <button id="save" class="btn waves-effect waves-light">Save</button>
+            </div>
+            <div class="input-field col s12">
+                <button id="book" value="2" class="btn waves-effect waves-light">Book</button>
+            </div>
+            <div class="input-field col s12">
+                <button id="signIn" value="1" class="btn waves-effect waves-light">Sign In</button>
+            </div>
+            <div class="input-field col s12">
+                <button id="updateIndex" value="5" class="btn waves-effect waves-light">Update</button>
+            </div>
+            <div class="input-field col s12">
+                <button id="clearAction" value="4" class="btn waves-effect waves-light">Stop</button>
+            </div>
+        </div>
+        <div class="col s9">
+            <div class="input-field col s12"><input type="text" id="planAdditionalPattern"><label for="planAdditionalPattern">Additional Pattern</label></div>
+            <div class="col s12">
+                <div class="card-panel light-blue darken-4" style="font-size: 11.9px;">
+                    <p><span class="white-text">Status: </span><span id="status" class="white-text"></span></p>
+                    <p><span class="white-text">Open Date: </span><span id="openDate" class="white-text"></span></p>
+                    <p><span class="white-text">Time Left</span></p>
+                    <p><span id="timeToGo" class="white-text">-</span></p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
-<script src="/js/jquery-2.1.3.min.js"></script>
-<script src="/js/moment.js"></script>
+<script src="/external/jquery-2.1.3.min.js"></script>
+<script src="/external/materialize/js/materialize.min.js"></script>
+<script src="/external/moment.js"></script>
 <script src="/src/bg/util.js"></script>
 <script src="/src/page_action/js/page_action.js"></script>

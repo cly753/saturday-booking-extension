@@ -1,20 +1,4 @@
-var all = {
-    user: {
-        username: '',
-        password: ''
-    },
-    plan: {},
-    host: '',
-    index: {
-        activity: {
-            "Volleyball" : 293
-        },
-        venue: {
-            "MOE (Evans) Outdoor Facilities" : 249
-        }
-    },
-    action: []
-};
+var all = $.extend(true, {}, allTemplate);
 
 var hostRegex = window.location.host.replace(/\./g, "\\.");
 var reg = {
@@ -32,13 +16,13 @@ var reg = {
 };
 
 var inject = function(src) {
-    console.log('.....: inject');
+    console.log('.....: inject src', src);
 
     var s = document.createElement('script');
     s.src = chrome.extension.getURL(src);
     s.onload = function() {
         //console.log('onload all', all);
-        window.postMessage(all, window.location.origin);
+        //window.postMessage(all, window.location.origin);
         //this.parentNode.removeChild(this);
     };
     (document.head||document.documentElement).appendChild(s);
@@ -57,11 +41,11 @@ var load = function(callback) {
     chrome.storage.sync.get({
         all: all
     }, function(store) {
-        console.log("inject.js restore chrome.storage.sync.get", store);
+        console.log("inject.js load chrome.storage.sync.get", store);
         all = store.all;
         //all.plan.activity = "Volleyball";
         //all.plan.venue = "MOE (Evans) Outdoor Facilities";
-        all.plan = new Plan(all.plan);
+        all.plan = new Plan(all.plan, all.index);
 
         if (callback !== undefined) callback();
     });
@@ -115,7 +99,50 @@ var updateIndex = function() {
         return ;
     }
 
-    // ...
+    //$("select[name=activity_filter]").val(293);
+    //$("select[name=activity_filter]").trigger("change");
+    //$("select[name=venue_filter]").val(249);
+    //$("select[name=venue_filter]").trigger("change");
+
+    window.addEventListener("message", function(event) {
+        if (event.origin !== 'https://' + all.host)
+            return ;
+        var PHPJS = event.data;
+        console.log('inject.js updateIndex PHPJS', PHPJS);
+
+        for (var i in PHPJS.activity_list)
+            all.index.activity[PHPJS.activity_list[i].name] = PHPJS.activity_list[i].activity_id;
+
+        var activityIndex = all.index.activity[all.plan.activity];
+        var url = 'https://' + all.host + '/ajax/getVenues/' + (activityIndex !== undefined ? activityIndex : all.index.activity.Volleyball);
+        console.log('requesting url', url);
+        $.ajax({
+            method: 'GET',
+            url: url,
+            cache: false,
+            success: function(data, textStatus, jqXHR) {
+                console.log('$.ajax.data');
+                console.log('data', data);
+                console.log('textStatus', textStatus);
+                console.log('jqXHR', jqXHR);
+
+                all.index.venue = {};
+                for (var i in data.venues)
+                    all.index.venue[data.venues[i].name] = data.venues[i].venue_id;
+
+                console.log('inject.js all', all);
+                save();
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log('[ERROR] $.ajax.error');
+                console.log('[ERROR] jqXHR', jqXHR);
+                console.log('[ERROR] textStatus', textStatus);
+                console.log('[ERROR] errorThrown', errorThrown);
+            }
+        });
+    }, false);
+
+    inject('/src/inject/do/facilities.js');
 
     popPush(ActionReadable.updateIndex);
 };
@@ -125,7 +152,7 @@ var book = function() {
 
     if (all.plan.openDate.diff(moment()) > 60000) {
         console.log('It\'s not the time, going to sleep...');
-        setTimeout(function() {window.location.reload()}, 40000);
+        setTimeout(function() { if (all.action.length > 0) window.location.reload()}, 40000);
         return ;
     }
 
@@ -146,7 +173,7 @@ var book = function() {
 
     if (all.plan.openDate.diff(moment()) > 5000) {
         console.log('It\'s not the time, going to sleep...');
-        setTimeout(function() {window.location.reload()}, 3000);
+        setTimeout(function() { if (all.action.length > 0) window.location.reload()}, 3000);
         return ;
     }
 
@@ -157,7 +184,7 @@ var book = function() {
             return ;
         }
         console.log('It\'s not the time, going to sleep...');
-        setTimeout(function() {window.location.reload()}, 300);
+        setTimeout(function() { if (all.action.length > 0) window.location.reload()}, 300);
         return ;
     }
 
@@ -182,9 +209,12 @@ var book = function() {
     });
 
     if (quota !== 0)
-        console.log('WARNING not exactly matched! quota', quota);
+        console.log('[WARNING] not exactly matched! quota', quota);
+    if (quota !== 2)
+        $("#paynow").click();
+    else
+        console.log('[WARNING] no slot selected...');
 
-    $("#paynow").click();
     popPush('book');
 };
 
@@ -235,10 +265,9 @@ var doSomething = function() {
 
 (function() {
     chrome.storage.onChanged.addListener(function(changes, area) {
-        console.log("inject chrome.storage.onChanged", changes);
-        for (var key in changes)
-            all = changes[key].newValue;
-        all.plan = new Plan(all.plan);
+        console.log("inject.js chrome.storage.onChanged", changes.all.newValue);
+        all = changes.all.newValue;
+        all.plan = new Plan(all.plan, all.index);
         doSomething();
     });
 

@@ -33,9 +33,33 @@ var ActionReadable = {
 
     6: 'Action-Idle',
     idle: 'Action-Idle'
-}
+};
 
-var Plan = function(p) {
+var allTemplate = {
+    user: {
+        username: '',
+        password: ''
+    },
+    plan: {
+        activity: '',
+        venue: '',
+        date: '1970-01-01',
+        hour: [],
+        additionalPattern: ''
+    },
+    host: '',
+    index: {
+        activity: {
+            "Volleyball" : 293
+        },
+        venue: {
+            "MOE (Evans) Outdoor Facilities" : 249
+        }
+    },
+    action: []
+};
+
+var Plan = function(p, index) {
     var self = this;
 
     self.activity = p.activity;
@@ -53,9 +77,11 @@ var Plan = function(p) {
     self.additionalPattern = p.additionalPattern;
 
     self.bookUrlSuffix = "/facilities/view/activity/"
-        + activityId[self.activity]
+        //+ activityId[self.activity]
+        + index.activity[self.activity]
         + "/venue/"
-        + venueId[self.venue]
+        //+ venueId[self.venue]
+        + index.venue[self.venue]
         + "?time_from="
         + self.date.unix();
 
