@@ -15,16 +15,13 @@ var reg = {
     idle: new RegExp("^https:\\/\\/" + hostRegex + "\\/\\S*$")
 };
 
-var inject = function(src) {
+var inject = function(src, callback) {
     console.log('.....: inject src', src);
 
     var s = document.createElement('script');
     s.src = chrome.extension.getURL(src);
-    s.onload = function() {
-        //console.log('onload all', all);
-        //window.postMessage(all, window.location.origin);
-        //this.parentNode.removeChild(this);
-    };
+    if (callback !== undefined)
+        s.onload = callback;
     (document.head||document.documentElement).appendChild(s);
 };
 
@@ -191,7 +188,6 @@ var book = function() {
     var quota = 2;
     $.each($("input[name='timeslots[]']"), function(i, o) {
         //console.log("each " + i, o);
-
         var yes = false;
         $.each(all.plan.pattern, function(i, p) {
             yes = yes || (-1 !== o.value.toLowerCase().indexOf(p) && -1 !== o.value.toLowerCase().indexOf(all.plan.additionalPattern.toLowerCase()));
@@ -211,11 +207,15 @@ var book = function() {
     if (quota !== 0)
         console.log('[WARNING] not exactly matched! quota', quota);
     if (quota !== 2)
-        $("#paynow").click();
-    else
+        inject('/src/inject/do/facilities.view.js', function() {
+            setTimeout(function() {
+                popPush(ActionReadable.book, Action.release)
+            }, 1000);
+        });
+    else {
         console.log('[WARNING] no slot selected...');
-
-    popPush('book');
+        popPush(ActionReadable.book);
+    }
 };
 
 var release = function() {
@@ -227,9 +227,16 @@ var release = function() {
         return ;
     }
 
-    // ...
+    //if (all.plan.openDate.add(7, 's').unix() < moment().unix()) {
+    //    setTimeout(function() { if (all.action.length > 0) window.location.reload()}, 60 * 1000);
+    //    return ;
+    //}
 
-    popPush(ActionReadable.release);
+    inject('/src/inject/do/cart.js', function() {
+        setTimeout(function() {
+            popPush(ActionReadable.release, Action.book);
+        }, 1000);
+    });
 };
 
 var doSomething = function() {

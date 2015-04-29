@@ -96,11 +96,15 @@ var init = function() {
             return ;
         $('select#planActivity').append($("<option></option>").attr("value", val).text(key));
     });
+    $('select#planActivity>option[value="' + all.index.activity[all.plan.activity] + '"]').prop('selected', true);
+    $('select#planActivity>option[value="' + all.index.activity[all.plan.activity] + '"]').trigger("change");
     $('select#planActivity').material_select();
 
     $.each(all.index.venue, function(key, val) {
         $('select#planVenue').append($("<option></option>").attr("value", val).text(key));
     });
+    $('select#planVenue>option[value="' + all.index.venue[all.plan.venue] + '"]').prop('selected', true);
+    $('select#planVenue>option[value="' + all.index.venue[all.plan.venue] + '"]').trigger("change");
     $('select#planVenue').material_select();
 
     $('.datepicker').pickadate({
@@ -123,6 +127,7 @@ var init = function() {
 
 $(document).ready(function() {
     $("#book").click(inform);
+    $("#release").click(inform);
     $("#signIn").click(inform);
     $("#updateIndex").click(inform);
     $("#clearAction").click(inform);
