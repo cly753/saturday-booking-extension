@@ -1,3 +1,1 @@
-#### a chrome extension
-
-#### use it on Saturday
+###### A chrome extension... Use it on Saturday.
