@@ -1,0 +1,67 @@
+{
+  "name": "Booking on Saturday",
+
+  "version": "0.0.1",
+
+  "manifest_version": 2,
+
+  "description": "Simulate booking process...",
+
+  "homepage_url": "http://hello.world",
+
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+
+  "background": {
+    "scripts": [
+      "external/jquery-2.1.3.min.js",
+      "external/moment.js",
+      "src/bg/util.js",
+      "src/bg/background.js"
+    ],
+    "persistent": true
+  },
+
+//  "options_ui": {
+//    "page": "src/options/options.html",
+//    "chrome_style": true
+//  },
+
+  "page_action": {
+    "default_icon": "icons/icon19.png",
+    "default_title": "open options",
+    "default_popup": "src/page_action/page_action.html"
+  },
+
+  "permissions": [
+    "notifications",
+    "tabs",
+    "webNavigation",
+    "storage",
+    "webRequest",
+    "webRequestBlocking",
+    "*://*.myactivesg.com/*",
+    "*://*.google-analytics.com/*"
+  ],
+
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.myactivesg.com/*"
+      ],
+      "js": [
+        "external/jquery-2.1.3.min.js",
+        "external/moment.js",
+        "src/bg/util.js",
+        "src/inject/inject.js"
+      ]
+    }
+  ],
+
+  "web_accessible_resources": [
+    "src/inject/do/*"
+  ]
+}

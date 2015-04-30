@@ -1,11 +1,6 @@
 
-var activityId = {
-    "Volleyball" : 293
-};
-
-var venueId = {
-    "MOE (Evans) Outdoor Facilities" : 249
-};
+var HOST = 'members.myactivesg.com';
+var HOST_2 = 'www.myactivesg.com';
 
 var Action = {
     signIn: 1,
@@ -47,7 +42,6 @@ var allTemplate = {
         hour: [],
         additionalPattern: ''
     },
-    host: '',
     index: {
         activity: {
             "Volleyball" : 293
@@ -77,10 +71,8 @@ var Plan = function(p, index) {
     self.additionalPattern = p.additionalPattern;
 
     self.bookUrlSuffix = "/facilities/view/activity/"
-        //+ activityId[self.activity]
         + index.activity[self.activity]
         + "/venue/"
-        //+ venueId[self.venue]
         + index.venue[self.venue]
         + "?time_from="
         + self.date.unix();

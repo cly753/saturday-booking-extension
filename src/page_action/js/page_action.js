@@ -8,30 +8,25 @@ var inform = function(event) {
         var all = store.all;
         all.plan = new Plan(all.plan, all.index);
 
-        console.log(ActionReadable[parseInt(event.target.value)] + ' store', all);
-        all.action.push(parseInt(event.target.value));
+        console.log('inform event', event);
+        var clicked = clicked instanceof Array ? event.target[0] : event.target;
+
+        console.log(ActionReadable[parseInt(clicked.value)] + ' store', all);
+        all.action.push(parseInt(clicked.value));
 
         var tempAll = $.extend(true, {}, all);
         tempAll.plan = all.plan.storeFormat();
         chrome.storage.sync.set({
             all: tempAll
         }, function() {
-            console.log(ActionReadable[parseInt(event.target.value)] + ' set');
+            console.log(ActionReadable[parseInt(clicked.value)] + ' set');
         });
     });
 };
 
 var update = function() {
-    if (all.plan.hour.length > 0)
-        $('select#planHourA').val(all.plan.hour[0] + '');
-    if (all.plan.hour.length > 1)
-        $('select#planHourB').val(all.plan.hour[1] + '');
-    $('select#planHourA').material_select();
-    $('select#planHourB').material_select();
-
     $("#status").text(all.action.reduce(function(a, b) { return ActionReadable[a] + ' > ' + ActionReadable[b]; }, ActionReadable.idle));
-    $("#openDate").val(all.plan.openDate.format('DD MMMM, YYYY HH:mm:ss'));
-    $("#openDate").change();
+    $("#openDate").text(all.plan.openDate.format('DD MMMM, YYYY HH:mm:ss'));
 };
 
 var clock = function() {
@@ -46,7 +41,6 @@ var clock = function() {
 var saveOptions = function() {
     all.user.username = $("#username").val();
     all.user.password = $("#password").val();
-    all.host = $("#host").val();
 
     all.plan.activity = $('#planActivity').find('option:selected').text();
     all.plan.venue = $('#planVenue').find('option:selected').text();
@@ -68,6 +62,7 @@ var saveOptions = function() {
         all: tempAll
     }, function() {
         console.log("page_action.js saveOptions chrome.storage.sync.get", tempAll);
+        Materialize.toast('Plan saved!', 1000);
     });
 };
 var restoreOptions = function() {
@@ -86,10 +81,8 @@ var restoreOptions = function() {
 var init = function() {
     $("#username").val(all.user.username);
     $("#password").val(all.user.password);
-    $("#host").val(all.host);
     $("#username").change();
     $("#password").change();
-    $("#host").change();
 
     $.each(all.index.activity, function(key, val) {
         if (key !== 'Volleyball')
@@ -118,11 +111,19 @@ var init = function() {
         $('select#planHourA').append($("<option></option>").attr("value", h).text((h < 10 ? '0' : '') + h + ':00'));
         $('select#planHourB').append($("<option></option>").attr("value", h).text((h < 10 ? '0' : '') + h + ':00'));
     }
+    if (all.plan.hour.length == 2 && all.plan.hour[0] > all.plan.hour[1])
+        all.plan.hour[0] = [all.plan.hour[1], all.plan.hour[1] = all.plan.hour[0]][0];
+    if (all.plan.hour.length > 0)
+        $('select#planHourA').val(all.plan.hour[0] + '');
+    if (all.plan.hour.length > 1)
+        $('select#planHourB').val(all.plan.hour[1] + '');
     $('select#planHourA').material_select();
     $('select#planHourB').material_select();
 
     $("#planAdditionalPattern").val(all.plan.additionalPattern);
     $("#planAdditionalPattern").change();
+
+    $.each($(".dropdown-content>li>span"), function(i, s) { $(s).css("font-size", 12); })
 };
 
 $(document).ready(function() {

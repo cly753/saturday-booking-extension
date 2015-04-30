@@ -1,26 +1,40 @@
 
-var host = '';
+var beforeRequest = function(details) {
+    console.log('background.js beforeRequest dropping details', details);
+    return {
+        cancel: (details.type === 'image' || details.url.indexOf('google-analytics.com') != -1) ? true : false
+    }; // BlockingResponse
+};
 
 var showIcon = function(tabId, changeInfo, tab) {
     //console.log("tabId", tabId); console.log("changeinfo", changeinfo); console.log("tab", tab);
     console.log("background.js showIcon tab", tab);
-    if (tab.url !== undefined && tab.url.indexOf(host) !== -1 && changeInfo.status === "complete")
+    if (tab.url !== undefined && changeInfo.status === "complete")
+        if (tab.url.indexOf(HOST) !== -1)
+    {
         chrome.pageAction.show(tabId);
+
+        chrome.webRequest.onBeforeRequest.addListener(beforeRequest, {
+            urls: [
+                '*://*.google-analytics.com/*',
+                '*://' + HOST_2 + '/*',
+                '*://' + HOST + '/*'
+            ],
+            //types: [
+            //    //"image"
+            //],
+            tabId: tabId
+            //windowId: -1
+        }, [
+            'blocking'
+        ]);
+        chrome.webRequest.handlerBehaviorChanged(function() {
+            console.log('background.js chrome.webRequest.handlerBehaviorChanged');
+        });
+    }
 };
 
 (function() {
-    //chrome.webNavigation.onCompleted.addListener(function(tab) {
-    //    //console.log("chrome.webNavigation.onCompleted tab", tab);
-    //    if (tab.frameId !== 0)
-    //        return ;
-    //});
-
-    chrome.storage.sync.get({
-        all: {}
-    }, function(store) {
-        console.log("background.js load chrome.storage.sync.get", store);
-        host = store.all.host;
-    });
     chrome.tabs.onUpdated.addListener(showIcon);
 })();
 

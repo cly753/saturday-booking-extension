@@ -1,58 +1,55 @@
 <!DOCTYPE html>
 
 <style type="text/css">
-    #mainPopup {
-        padding: 10px;
-        /*height: 200px;*/
-        width: 400px;
+    body {
+        width: 475px;
+    }
+    ::-webkit-scrollbar {
+        display: none;
     }
 </style>
 <link rel="stylesheet" href="/external/materialize/css/materialize.min.css">
 
-<div id="mainPopup" class="container">
+<div>
     <div class="row" style="margin-bottom: 0px;">
-        <div class="input-field col s3"><input type="text" id="username" class="validate"><label for="username">Username</label></div>
-        <div class="input-field col s3"><input type="password" id="password" class="validate"><label for="password">Password</label></div>
-        <div class="input-field col s6"><input type="text" id="host"><label for="host">Host</label></div>
-        <div class="input-field col s4"><select id="planActivity"></select><label for="planActivity">Activity</label></div>
-        <div class="input-field col s8"><select id="planVenue"></select><label for="planVenue">Venue</label></div>
-        <div class="input-field col s5"><input type="date" id="planDate" class="datepicker"><label for="planDate">Date</label></div>
-        <div class="input-field col s7"><input disabled type="text" id="openDate"><label for="opendate">Open Date</label></div>
-        <div class="col s3">
-            <div class="input-field col s12">
-                <!--<button id="refresh" class="btn waves-effect waves-light">Refresh</button>-->
-                <button id="save" class="btn waves-effect waves-light">Save</button>
-            </div>
-            <div class="input-field col s12">
-                <button id="book" value="2" class="btn waves-effect waves-light">Book</button>
-            </div>
-            <div class="input-field col s12">
-                <button id="release" value="3" class="btn waves-effect waves-light">Release</button>
-            </div>
-            <div class="input-field col s12">
-                <button id="signIn" value="1" class="btn waves-effect waves-light">Sign In</button>
-            </div>
-            <div class="input-field col s12">
-                <button id="updateIndex" value="5" class="btn waves-effect waves-light">Update</button>
-            </div>
-            <div class="input-field col s12">
-                <button id="clearAction" value="4" class="btn waves-effect waves-light">Stop</button>
-            </div>
+        <div class="input-field col s5 m3 l3"><input type="text" id="username" class="validate"><label for="username">Username</label></div>
+        <div class="input-field col s5 m2 l2"><input type="password" id="password" class="validate"><label for="password">Password</label></div>
+        <div class="input-field col s2 m2 l2"><button id="signIn" value="1" class="btn-floating waves-effect waves-light">Sign In</button></div>
+
+        <div class="input-field col s3 m3 l3"><select id="planActivity"></select><label for="planActivity">Activity</label></div>
+        <div class="input-field col s7 m7 l7"><select id="planVenue"></select><label for="planVenue">Venue</label></div>
+        <div class="input-field col s2 m2 l2"><button id="updateIndex" value="5" class="btn-floating waves-effect waves-light tooltipped" data-position="left" data-delay="50" data-tooltip="Update venue info">Update</button></div>
+
+        <div class="input-field col s3 m3 l3"><input type="date" id="planDate" class="datepicker"><label for="planDate">Date</label></div>
+        <div class="input-field col s2 m2 l2"><select id="planHourA"><option value=-1>skip</option></select><label for="planHourA">1st</label></div>
+        <div class="input-field col s2 m2 l2"><select id="planHourB"><option value=-1>skip</option></select><label for="planHourB">2nd</label></div>
+        <div class="input-field col s3 m3 l3"><input type="text" id="planAdditionalPattern"><label for="planAdditionalPattern">Extra Pattern</label></div>
+        <div class="input-field col s2 m2 l2"><button id="save" class="btn-floating waves-effect waves-light">Save</button></div>
+
+        <div class="col s3 m3 l3">
+            <blockquote>
+                <h6>Status</h6>
+                <br>
+                <h6>Open</h6>
+                <br>
+                <h6>Time Left</h6>
+            </blockquote>
         </div>
-        <div class="col s9">
-            <div class="input-field col s4"><select id="planHourA"><option value=-1>skip</option></select><label for="planHourA">1st</label></div>
-            <div class="input-field col s4"><select id="planHourB"><option value=-1>skip</option></select><label for="planHourB">2nd</label></div>
-            <div class="input-field col s4"><input type="text" id="planAdditionalPattern"><label for="planAdditionalPattern">Extra Pattern</label></div>
-            <div class="col s12">
-                <div class="card-panel light-blue darken-4" style="font-size: 11.9px; padding-bottom: 10px;">
-                    <table>
-                        <tr><td style="padding: 9px;"><span class="white-text">Status</span></td></tr>
-                        <tr><td style="padding: 9px;"><span id="status" class="white-text"></span></td></tr>
-                        <tr><td style="padding: 8px;"><span class="white-text">Time Left</span></td></tr>
-                        <tr><td style="padding: 8px;"><span id="timeToGo" class="white-text">-</span></td></tr>
-                    </table>
-                </div>
-            </div>
+        <div class="col s7 m7 l7">
+            <blockquote>
+                <h6><span id="status"></span></h6>
+                <br>
+                <h6><span id="openDate"></span></h6>
+                <br>
+                <h6><span id="timeToGo">-</span></h6>
+            </blockquote>
+        </div>
+
+        <div class="col s2 m2 l2">
+            <!--<div class="input-field col s12"><button id="refresh" class="btn waves-effect waves-light">Refresh</button></div>-->
+            <button id="book" value="2" class="input-field btn-floating waves-effect waves-light">Book</button>
+            <!--<button id="release" value="3" class="input-field btn-floating waves-effect waves-light">Release</button>-->
+            <button id="clearAction" value="4" class="input-field btn-floating waves-effect waves-light tooltipped" data-position="left" data-delay="50" data-tooltip="Stop auto-rebook">Stop</button>
         </div>
     </div>
 </div>
