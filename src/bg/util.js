@@ -61,7 +61,7 @@ var Plan = function(p, index) {
 
     self.date = moment(p.date);
     self.openDate = moment(p.date);
-    self.openDate.subtract(14, 'days').add(7, 'hours');
+    self.openDate.subtract(15, 'days').add(7, 'hours');
     //self.openDate.subtract(14, 'days').add(1, 'hours').add(22, 'minutes');
 
     self.hour = p.hour;

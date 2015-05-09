@@ -239,14 +239,23 @@ var release = function() {
         return ;
     }
 
-    var timeLeft = $.each($("#cartTimer").text().split(':'), function(i, o) {
-        return parseInt(o);
+    var text = $("li.mms-nav").find("span.title").text();
+    if (text !== "My Account") {
+        console.log('text: ' + text + ' (Not signed in. Going to sign in...)');
+        all.action.push(Action.signIn);
+        save();
+        return;
+    }
+
+    var timeLeft = $.map($("#cartTimer").text().split(':'), function(o, i) {
+        return parseInt(o, 10);
     });
 
-    console.log('Re-book after ' + (timeLeft[0] - 1) + ' minutes ' + timeLeft[1] + ' seconds...');
+    var rebookMilli = (Math.max(0, timeLeft[0] - 1) * 60 + timeLeft[1]) * 1000;
+    console.log('Re-book after ' + (timeLeft[0] - 1) + ' minutes ' + timeLeft[1] + ' seconds... (' + rebookMilli + ' milliseconds) timeLeft', timeLeft);
     setTimeout(function() {
         if (all.action[all.action.length - 1] !== Action.release)
-            reutrn ;
+            return ;
         window.addEventListener("message", function(event) {
             console.log('receive message event', event);
             if (event.origin !== 'https://' + HOST)
@@ -257,8 +266,9 @@ var release = function() {
             popPush(ActionReadable.release, Action.book);
         }, false);
         inject('/src/inject/do/cart.js');
-    }, 1000 * ((timeLeft[0] - 1) * 60 + timeLeft[1]));
-    //}, 10 * 1000);
+    }, rebookMilli);
+    // }, (timeLeft[1]) * 1000);
+    // }, 10 * 1000);
 };
 
 var doSomething = function() {
