@@ -177,18 +177,6 @@ var book = function() {
         return;
     }
 
-    //$.post('https://members.myactivesg.com/facilities/processStandardBooking/a026eb1a0e3ecfa4748c1fe8cc29859d', {
-    //    'activity_id': '293',
-    //    'venue_id': '249',
-    //    'chosen_date': '2015-05-31',
-    //    '2df2adff810116083a6b4cc450901085': 'a016c1703dd50c6e8541213c171c1936e71ecf24bea8913af1f283ecf5e6803b',
-    //    'timeslots[]': ['Basketball Court 2;3141;139985;09:00:00;10:00:00'],
-    //    'cart': 'ADD TO CART',
-    //    'fdscv': '0XX0Z'
-    //}).done(function(data) {
-    //    console.log('done data', data);
-    //});
-
     if (window.location.href === target) {
         if (wait(5000, 3000)) return ;
 
@@ -249,6 +237,69 @@ var book = function() {
         $("select[name=venue_filter]").trigger("change");
 
         $(".btn-filter-search").click();
+
+        //$.post('https://members.myactivesg.com/facilities/processStandardBooking/a026eb1a0e3ecfa4748c1fe8cc29859d', {
+        //    'activity_id': '293',
+        //    'venue_id': '249',
+        //    'chosen_date': '2015-05-31',
+        //    '2df2adff810116083a6b4cc450901085': 'a016c1703dd50c6e8541213c171c1936e71ecf24bea8913af1f283ecf5e6803b',
+        //    'timeslots[]': ['Basketball Court 2;3141;139985;09:00:00;10:00:00'],
+        //    'cart': 'ADD TO CART',
+        //    'fdscv': '0XX0Z'
+        //}).done(function(data) {
+        //    console.log('done data', data);
+        //});
+
+        $.get('https://' + HOST + '/facilities/ajax/getTimeslots',
+            {
+                activity_id: all.index.activity[all.plan.activity],
+                venue_id: all.index.venue[all.plan.venue],
+                date: all.plan.date.format('yyyy-MM-DD'),
+                time_from: all.plan.date.unix()
+            },
+            function(data) {
+                console.log('getTimeslots data', data);
+                var bookForm = $.parseHTML(data);
+
+                var values = [];
+                var quota = 2;
+                $.each(bookForm, function(i, o) {
+                    $.each($('input[name="timeslots[]"]', o), function(ii, oo) {
+                        var yes = false;
+                        var value = oo.value;
+                        $.each(all.plan.pattern, function (iii, p) {
+                            yes = yes || (-1 !== value.toLowerCase().indexOf(p) && -1 !== value.toLowerCase().indexOf(all.plan.additionalPattern.toLowerCase()));
+                        });
+
+                        if (yes) {
+                            if (quota > 0)
+                                values.push(value);
+                            else
+                                console.log('too many matches... ', oo);
+                            quota--;
+                        }
+                    });
+                });
+
+                payload = {
+                    'activity_id': all.index.activity[all.plan.activity],
+                    'venue_id': all.index.venue[all.plan.venue],
+                    'chosen_date': all.plan.date.format('yyyy-MM-DD'),
+                    //'2df2adff810116083a6b4cc450901085': 'a016c1703dd50c6e8541213c171c1936e71ecf24bea8913af1f283ecf5e6803b',
+                    //'timeslots[]': ['Basketball Court 2;3141;139985;09:00:00;10:00:00'],
+                    'timeslots[]': values,
+                    'cart': 'ADD TO CART',
+                    'fdscv': '0XX0Z'
+                };
+                payload[bookForm[0].name] = bookForm[0].value;
+
+                $.post('https://members.myactivesg.com/facilities/processStandardBooking/a026eb1a0e3ecfa4748c1fe8cc29859d',
+                    payload
+                ).done(function(data) {
+                    console.log('done data', data);
+                });
+            }
+        );
     }
 };
 
