@@ -27,7 +27,10 @@ var ActionReadable = {
     updateIndex: 'Action-Update-Index',
 
     6: 'Action-Idle',
-    idle: 'Action-Idle'
+    idle: 'Action-Idle',
+
+    //7: 'Action-QuickBook',
+    //quickBook: 'Action-QuickBook'
 };
 
 var allTemplate = {
